@@ -1,3 +1,8 @@
+import rclpy
+from rclpy.node import Node
+from std_msgs.msg import Bool
+from geometry_msgs import Twist
+
 import hashlib
 import os
 import re
@@ -18,6 +23,8 @@ VERNIE_SINGLE_MOVE = 430
 class Vernie(MoveHub):
     def __init__(self):
         super(Vernie, self).__init__()
+
+        print("Initializing Vernie")
 
         while True:
             required_devices = (self.vision_sensor, self.motor_external)
@@ -67,3 +74,60 @@ class Vernie(MoveHub):
         self.motor_external.timed(0.5)
         self.head(STRAIGHT)
         self.head(STRAIGHT)
+
+class VernieController(Node):
+
+    def __init__(self):
+        super().__init__('vernie_controller_node')
+
+        self.received_twist = Twist
+        self.received_connection_status = False
+        self.connection_subscription = self.create_subscription(
+            Bool,
+            'connection',
+            self.connection_listener,
+            10)
+        self.connection_subscription  # prevent unused variable warning
+
+        self.twist_subscription = self.create_subscription(
+            Twist,
+            'twist',
+            self.twist_listener,
+            10)
+        self.twist_subscription  # prevent unused variable warning
+
+
+    def connection_listener(self, msg):
+        self.received_connection_status = msg.data
+
+    def twist_listener(self, msg):
+        self.received_twist = msg
+
+def main(args=None):
+   
+  # print("test hello")
+
+  # robot = Vernie()
+
+  # print("robot initialized")
+
+  # robot.turn(LEFT, 90)
+  # robot.turn(RIGHT, 90)
+
+   #print("turned?")
+
+    rclpy.init(args=args)
+
+    vernie_controller_node = VernieController()
+
+    rclpy.spin(vernie_controller_node)
+
+    # Destroy the node explicitly
+    # (optional - otherwise it will be done automatically
+    # when the garbage collector destroys the node object)
+    minimal_subscriber.destroy_node()
+    rclpy.shutdown()
+
+
+if __name__ == '__main__':
+    main()
