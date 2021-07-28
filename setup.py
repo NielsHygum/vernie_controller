@@ -19,6 +19,6 @@ setup(
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
-        'console_scripts': ['vernie_control = vernie_controller.vernie_main:main',],
+        'console_scripts': ['vernie_control = vernie_controller.vernie_controll:main','vernie_main = vernie_controller.vernie_main:main'],
     },
 )

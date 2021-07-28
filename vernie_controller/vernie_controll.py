@@ -1,7 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import Bool
-from geometry_msgs import Twist
+from geometry_msgs.msg import Twist
 
 import hashlib
 import os
@@ -95,6 +95,8 @@ class VernieController(Node):
             self.twist_listener,
             10)
         self.twist_subscription  # prevent unused variable warning
+        self.vernie_robot_interface = Vernie()
+
 
 
     def connection_listener(self, msg):
@@ -102,6 +104,8 @@ class VernieController(Node):
 
     def twist_listener(self, msg):
         self.received_twist = msg
+        self.vernie_robot_interface.move(msg.angular.z, 1, msg.linear.x)
+
 
 def main(args=None):
    
@@ -125,7 +129,7 @@ def main(args=None):
     # Destroy the node explicitly
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
+    vernie_controller_node.destroy_node()
     rclpy.shutdown()
 
 
